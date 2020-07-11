@@ -50,3 +50,5 @@ MYMETA.*
 .tidyallrc
 MANIFEST.SKIP
 eg/keyboard.pl
+cmake*
+CMake*

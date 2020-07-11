@@ -10,7 +10,7 @@ use Module::Build::Tiny 0.035;
 
 use Devel::CheckBin;
 
-check_bin('python');`cd ./termbox/;python ./waf configure --prefix=../share/;python ./waf;python ./waf install;cd ../`;
+check_bin('cmake');`cmake ./termbox/ -DWITH_TRUECOLOR=1 -DBUILD_DEMOS=0 -DCMAKE_INSTALL_PREFIX=./share/;make;make install;`;
 ('1');
 
 Build_PL();

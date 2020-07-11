@@ -28,17 +28,29 @@ package Termbox {
     #
     $EXPORT_TAGS{api} = [
         qw[
-            tb_init tb_init_file tb_init_fd tb_shutdown
+            tb_init tb_init_screen tb_init_with ib_init_file ib_init_fd tb_shutdown
             tb_width tb_height
-            tb_clear tb_set_clear_attributes
-            tb_present
-            tb_set_cursor
-            tb_put_cell tb_change_cell
-            tb_cell_buffer
-            tb_select_input_mode
+            tb_clear_buffer tb_set_clear_attributes
+            tb_clear_screen
+            tb_render
+            tb_rgb
+            tb_set_cursor tb_set_title
+            tb_flush
+            tb_send
+            tb_string
+            tb_string_with_limit
+            tb_char
+            tb_empty
+            tb_cell
+            tb_hide_cursor tb_show_cursor
+            tb_enable_mouse tb_disable_mouse
+            tb_peek_event tb_poll_event
+            tb_resize
             tb_select_output_mode
-            tb_peek_event
-            tb_poll_event
+            tb_utf8_char_length
+            tb_utf8_char_to_unicode
+            tb_utf8_unicode_to_char
+            tb_unicode_is_char_wide
             ]
     ];
     use constant {
@@ -316,46 +328,98 @@ package Termbox {
     use Termbox::Event;
     $ffi->type('record(Termbox::Event)');
     #
-    $ffi->attach( tb_init      => ['void']   => 'int' );
-    $ffi->attach( tb_init_file => ['string'] => 'int' );
-    $ffi->attach( tb_init_fd   => ['int']    => 'int' );
-    $ffi->attach( tb_shutdown  => ['void']   => 'void' );
+    $ffi->attach( tb_init        => ['void']   => 'int' );
+    $ffi->attach( tb_init_screen => ['int']    => 'int' );
+    $ffi->attach( tb_init_with   => ['int']    => 'int' );
+    $ffi->attach( tb_init_file   => ['string'] => 'int' );
+    $ffi->attach( tb_init_fd     => ['int']    => 'int' );
+    $ffi->attach( tb_shutdown    => ['void']   => 'void' );
     #
     $ffi->attach( tb_width  => ['void'] => 'int' );
     $ffi->attach( tb_height => ['void'] => 'int' );
     #
-    $ffi->attach( tb_clear                => ['void']                   => 'void' );
+    $ffi->attach( tb_clear_buffer         => ['void']                   => 'void' );
     $ffi->attach( tb_set_clear_attributes => [ 'uint16_t', 'uint16_t' ] => 'void' );
     #
-    $ffi->attach( tb_present => ['void'] => 'void' );
+    $ffi->attach( tb_clear_screen => ['void'] => 'void' );
+    #
+    $ffi->attach( tb_render => ['void'] => 'void' );
+
+    #
+    $ffi->attach( tb_rgb => ['uint32_t'] => 'uint16_t' );
+
     #
     $ffi->attach( tb_set_cursor => [ 'int', 'int' ] => 'void' );
-    #
-    $ffi->attach( tb_put_cell => [ 'int', 'int', 'record(Termbox::Cell)*' ] => 'void' );
-    $ffi->attach(
-        [ 'tb_change_cell' => '_tb_change_cell' ],
-        [ 'int', 'int', 'uint32_t', 'uint16_t', 'uint16_t' ] => 'void'
-    );
 
-    # The C API expects a char which doesn't so much work with Perl's representation of a character.
-    sub tb_change_cell {
-        _tb_change_cell( $_[0], $_[1], ( length $_[2] == 1 ? ord( $_[2] ) : $_[2] ), $_[3], $_[4] );
-    }
+    #
+    $ffi->attach( tb_set_title => ['string'] => 'void' );
+
+    #
+    $ffi->attach( tb_flush => ['void'] => 'void' );
+    #
+    $ffi->attach( tb_send => ['string'] => 'void' );
+    #
+    #$ffi->attach( tb_sendf => ['string', ...] => 'void' );
+    #
+    $ffi->attach( tb_string => [qw[int int uint32_t uint32_t string]] => 'int' );
+    #
+    $ffi->attach( tb_string_with_limit => [qw[int int uint32_t uint32_t string int]] => 'int' );
+
+    #$ffi->attach( tb_stringf => [''] => 'void' );
+
+    $ffi->attach( tb_char => [qw[int int uint32_t uint32_t uint32_t]] => 'int' );
+
+    $ffi->attach( tb_empty => [qw[int int uint32_t int]] => 'void' );
+
+    #
+    $ffi->attach( tb_cell => [ 'int', 'int', 'record(Termbox::Cell)*' ] => 'void' );
+
+    # I need to figure out mutators in FFI::Platypus
+    #$ffi->attach( tb_cell => [ 'void' ] => 'record(Termbox::Cell)*' );
+
     #
     $ffi->attach( tb_cell_buffer => ['void'] => 'record(Termbox::Cell)*' );
+
     #
-    $ffi->attach( tb_select_input_mode => ['int'] => 'int' );
+    $ffi->attach( tb_hide_cursor => ['void'] => 'void' );
+
+    $ffi->attach( tb_show_cursor => ['void'] => 'void' );
+
     #
-    $ffi->attach( tb_select_output_mode => ['int'] => 'int' );
+
+    $ffi->attach( tb_enable_mouse => ['void'] => 'void' );
+
+    $ffi->attach( tb_disable_mouse => ['void'] => 'void' );
+
+    #
+    #$ffi->attach(
+    #    [ 'tb_change_cell' => '_tb_change_cell' ],
+    #    [ 'int', 'int', 'uint32_t', 'uint16_t', 'uint16_t' ] => 'void'
+    #);
+
+    # The C API expects a char which doesn't so much work with Perl's representation of a character.
+    #sub tb_change_cell {
+    #    _tb_change_cell( $_[0], $_[1], ( length $_[2] == 1 ? ord( $_[2] ) : $_[2] ), $_[3], $_[4] );
+    #}
+    #
+    #
+    #
     #
     $ffi->attach( tb_peek_event => [ 'record(Termbox::Event)*', 'int' ] => 'int' );
     #
     $ffi->attach( tb_poll_event => ['record(Termbox::Event)*'] => 'int' );
 
+    #
+    $ffi->attach( tb_select_output_mode => ['int'] => 'int' );
+    #
+
+    $ffi->attach( tb_resize => ['void'] => 'void' );
+
     # Utils: Not documented yet... might keep them private
     $ffi->attach( tb_utf8_char_length     => ['char']                   => 'int' );
     $ffi->attach( tb_utf8_char_to_unicode => [ 'uint32_t *', 'string' ] => 'int' );
     $ffi->attach( tb_utf8_unicode_to_char => [qw[string uint32_t]]      => 'int' );
+    $ffi->attach( tb_unicode_is_char_wide => [qw[uint32_t]]             => 'int' );
     #
 }
 1;
@@ -375,7 +439,7 @@ Termbox - Create Text-based User Interfaces Without ncurses
 	die sprintf "termbox init failed, code: %d\n", $code if $code;
 	tb_select_input_mode(TB_INPUT_ESC);
 	tb_select_output_mode(TB_OUTPUT_NORMAL);
-	tb_clear();
+	tb_clear_buffer();
 	my @rows = (
 		[TB_WHITE,   TB_BLACK],
 		[TB_BLACK,   TB_DEFAULT],
@@ -452,20 +516,20 @@ Causes the termbox library to attempt to clean up after itself.
 Returns the horizontal size of the internal back buffer (which is the same as
 terminal's window size in characters).
 
-The internal buffer can be resized after C<tb_clear( )> or C<tb_present( )>
-function calls. This function returns an unspecified negative value when called
-before C<tb_init( )> or after C<tb_shutdown( )>.
+The internal buffer can be resized after C<tb_clear_buffer( )> or C<tb_present(
+)> function calls. This function returns an unspecified negative value when
+called before C<tb_init( )> or after C<tb_shutdown( )>.
 
 =head2 C<tb_height( )>
 
 Returns the vertical size of the internal back buffer (which is the same as
 terminal's window size in characters).
 
-The internal buffer can be resized after C<tb_clear( )> or C<tb_present( )>
-function calls. This function returns an unspecified negative value when called
-before C<tb_init( )> or after C<tb_shutdown( )>.
+The internal buffer can be resized after C<tb_clear_buffer( )> or C<tb_present(
+)> function calls. This function returns an unspecified negative value when
+called before C<tb_init( )> or after C<tb_shutdown( )>.
 
-=head2 C<tb_clear( )>
+=head2 C<tb_clear_buffer( )>
 
 Clears the internal back buffer using C<TB_DEFAULT> color or the
 color/attributes set by C<tb_set_clear_attributes( )> function.
@@ -473,7 +537,7 @@ color/attributes set by C<tb_set_clear_attributes( )> function.
 =head2 C<tb_set_clear_attributes( $fg, $bg )>
 
 Overrides the use of C<TB_DEFAULT> to clear the internal back buffer when
-C<tb_clear( )> is called.
+C<tb_clear_buffer( )> is called.
 
 =head2 C<tb_present( )>
 
@@ -500,9 +564,9 @@ background colors.
 
 Returns a C<Termbox::Cell> object containing a pointer to internal cell back
 buffer. You can get its dimensions using C<tb_width( )> and C<tb_height( )>
-methods. The pointer stays valid as long as no C<tb_clear( )> and C<tb_present(
-)> calls are made. The buffer is one-dimensional buffer containing lines of
-cells starting from the top.
+methods. The pointer stays valid as long as no C<tb_clear_buffer( )> and
+C<tb_present( )> calls are made. The buffer is one-dimensional buffer
+containing lines of cells starting from the top.
 
 =head2 C<tb_select_input_mode( $mode )>
 

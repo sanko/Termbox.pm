@@ -11,7 +11,7 @@ Termbox - Create Text-based User Interfaces Without ncurses
         die sprintf "termbox init failed, code: %d\n", $code if $code;
         tb_select_input_mode(TB_INPUT_ESC);
         tb_select_output_mode(TB_OUTPUT_NORMAL);
-        tb_clear();
+        tb_clear_buffer();
         my @rows = (
                 [TB_WHITE,   TB_BLACK],
                 [TB_BLACK,   TB_DEFAULT],
@@ -88,20 +88,20 @@ Causes the termbox library to attempt to clean up after itself.
 Returns the horizontal size of the internal back buffer (which is the same as
 terminal's window size in characters).
 
-The internal buffer can be resized after `tb_clear( )` or `tb_present( )`
-function calls. This function returns an unspecified negative value when called
-before `tb_init( )` or after `tb_shutdown( )`.
+The internal buffer can be resized after `tb_clear_buffer( )` or `tb_present(
+)` function calls. This function returns an unspecified negative value when
+called before `tb_init( )` or after `tb_shutdown( )`.
 
 ## `tb_height( )`
 
 Returns the vertical size of the internal back buffer (which is the same as
 terminal's window size in characters).
 
-The internal buffer can be resized after `tb_clear( )` or `tb_present( )`
-function calls. This function returns an unspecified negative value when called
-before `tb_init( )` or after `tb_shutdown( )`.
+The internal buffer can be resized after `tb_clear_buffer( )` or `tb_present(
+)` function calls. This function returns an unspecified negative value when
+called before `tb_init( )` or after `tb_shutdown( )`.
 
-## `tb_clear( )`
+## `tb_clear_buffer( )`
 
 Clears the internal back buffer using `TB_DEFAULT` color or the
 color/attributes set by `tb_set_clear_attributes( )` function.
@@ -109,7 +109,7 @@ color/attributes set by `tb_set_clear_attributes( )` function.
 ## `tb_set_clear_attributes( $fg, $bg )`
 
 Overrides the use of `TB_DEFAULT` to clear the internal back buffer when
-`tb_clear( )` is called.
+`tb_clear_buffer( )` is called.
 
 ## `tb_present( )`
 
@@ -136,9 +136,9 @@ background colors.
 
 Returns a `Termbox::Cell` object containing a pointer to internal cell back
 buffer. You can get its dimensions using `tb_width( )` and `tb_height( )`
-methods. The pointer stays valid as long as no `tb_clear( )` and `tb_present(
-)` calls are made. The buffer is one-dimensional buffer containing lines of
-cells starting from the top.
+methods. The pointer stays valid as long as no `tb_clear_buffer( )` and
+`tb_present( )` calls are made. The buffer is one-dimensional buffer
+containing lines of cells starting from the top.
 
 ## `tb_select_input_mode( $mode )`
 
