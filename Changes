@@ -3,7 +3,9 @@ Revision history for Perl extension Termbox
 {{$NEXT}}
 
 	- New on-screen movement example: eg/draw_box.pl
-	- New mouse interaction event example: eg/mouse_input.pl
+	- New mouse interaction event examples:
+		* eg/mouse_input.pl
+		* eg/paint.pl
 
 0.10 2020-07-11T04:41:46Z
 

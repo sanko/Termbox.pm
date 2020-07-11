@@ -2,7 +2,6 @@
 use strictures 2;
 use Termbox qw[:all];
 use experimental 'signatures';
-use Data::Dump;
 
 # Partly based on http://electronictoofree.blogspot.com/2018/03/text-based-user-interface-termbox_25.html
 my @chars = split //, 'Hello, world!';
