@@ -46,3 +46,7 @@ MYMETA.*
 /share/
 .idea/
 .tidyall.d/
+.perltidyrc
+.tidyallrc
+MANIFEST.SKIP
+eg/keyboard.pl
