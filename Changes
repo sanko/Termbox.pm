@@ -6,6 +6,7 @@ Revision history for Perl extension Termbox
 	- New mouse interaction event examples:
 		* eg/mouse_input.pl
 		* eg/paint.pl
+	- Switch to https://github.com/termbox/termbox fork for libtermbox
 
 0.10 2020-07-11T04:41:46Z
 
