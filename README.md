@@ -40,7 +40,7 @@ Termbox - Create Text-based User Interfaces Without ncurses
 # DESCRIPTION
 
 Termbox is a library that provides minimalistic API which allows the programmer
-to write text-based user interfaces. The library is crossplatform and has both
+to write text-based user interfaces. The library is cross-platform and has both
 terminal-based implementations on \*nix operating systems and a winapi console
 based implementation for windows operating systems. The basic idea is an
 abstraction of the greatest common subset of features available on all major
@@ -202,7 +202,7 @@ Sets the termbox output mode. Termbox has three output options:
 
 - 4. `TB_OUTPUT_GRAYSCALE` - `0 .. 23`
 
-    This mode supports the 4th range of the 256 mode only. But you dont need to
+    This mode supports the 4th range of the 256 mode only. But you do not need to
     provide an offset.
 
 If 'mode' is `TB_OUTPUT_CURRENT`, it returns the current output mode.

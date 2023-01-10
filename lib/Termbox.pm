@@ -404,7 +404,7 @@ Termbox - Create Text-based User Interfaces Without ncurses
 =head1 DESCRIPTION
 
 Termbox is a library that provides minimalistic API which allows the programmer
-to write text-based user interfaces. The library is crossplatform and has both
+to write text-based user interfaces. The library is cross-platform and has both
 terminal-based implementations on *nix operating systems and a winapi console
 based implementation for windows operating systems. The basic idea is an
 abstraction of the greatest common subset of features available on all major
@@ -574,7 +574,7 @@ provide an offset.
 
 =item 4. C<TB_OUTPUT_GRAYSCALE> - C<0 .. 23>
 
-This mode supports the 4th range of the 256 mode only. But you dont need to
+This mode supports the 4th range of the 256 mode only. But you do not need to
 provide an offset.
 
 =back
