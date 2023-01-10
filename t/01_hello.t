@@ -5,11 +5,9 @@ use lib '../lib', 'lib';
 #
 use Termbox qw[:all];
 #
-
 my @chars = split //, 'hello, world!';
 my $code  = tb_init();
 ok !$code, 'termbox init';
-
 ok tb_select_input_mode(TB_INPUT_ESC);
 ok tb_select_output_mode(TB_OUTPUT_NORMAL);
 tb_clear();
