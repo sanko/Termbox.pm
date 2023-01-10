@@ -8,12 +8,11 @@ package Termbox {
     use File::Spec::Functions qw[catdir canonpath];
     #
     use FFI::CheckLib;
-    use FFI::Platypus 1.00;
+    use FFI::Platypus 2.00;
     use FFI::Platypus::Memory qw( malloc free );
     $ENV{FFI_PLATYPUS_DLERROR} = 1;
     my $ffi = FFI::Platypus->new(
-        api          => 1,
-        experimental => 2,
+        api          => 2,
         lang         => 'CPP',
         lib          => find_lib_or_exit(
             lib       => 'termbox',

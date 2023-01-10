@@ -1,6 +1,6 @@
 requires 'perl', '5.002000';
 requires 'strictures', 2;
-requires 'FFI::Platypus';
+requires 'FFI::Platypus', 2;
 requires 'FFI::Platypus::Lang::CPP';
 requires 'File::ShareDir';
 requires 'File::Spec::Functions';
