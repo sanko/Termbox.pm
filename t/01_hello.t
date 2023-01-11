@@ -4,6 +4,7 @@ use Test::More 0.98;
 use lib '../lib', 'lib';
 #
 use Termbox qw[:all];
+plan skip_all => 'Need interactive stdin, stderr' unless -t STDIN and -t STDERR;
 #
 my @chars = split //, 'hello, world!';
 my $code  = tb_init();
