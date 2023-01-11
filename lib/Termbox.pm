@@ -1,4 +1,4 @@
-package Termbox {
+package Termbox 0.12 {
     use 5.020;
     use strictures 2;
     use warnings;
@@ -10,7 +10,6 @@ package Termbox {
     use FFI::Platypus 2.00;
     use FFI::Platypus::Memory qw( malloc free );
     $ENV{FFI_PLATYPUS_DLERROR} = 1;
-    our $VERSION = "0.12_01";
     my $ffi = FFI::Platypus->new(
         api  => 2,
         lang => 'CPP',

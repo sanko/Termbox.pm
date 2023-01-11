@@ -1,8 +1,7 @@
-package Termbox::Cell {
+package Termbox::Cell 0.12 {
     use 5.020;
     use strictures 2;
     use warnings;
-    our $VERSION = "0.12_01";
     #
     use FFI::Platypus::Record;
     record_layout_1(
