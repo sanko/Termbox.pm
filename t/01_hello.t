@@ -4,7 +4,8 @@ use Test::More 0.98;
 use lib '../lib', 'lib';
 #
 use Termbox qw[:all];
-plan skip_all => 'Need interactive stdin, stderr' unless -t STDIN and -t STDERR;
+my $isa_tty = -t STDIN && ( -t STDOUT || !( -f STDOUT || -c STDOUT ) );
+plan skip_all => 'Tests require an STDOUT to be a TTY' if !$isa_tty;
 #
 my @chars = split //, 'hello, world!';
 my $code  = tb_init();
