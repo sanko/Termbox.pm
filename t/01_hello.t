@@ -4,32 +4,21 @@ use Test::More 0.98;
 use lib '../lib', 'lib';
 #
 use Termbox qw[:all];
+plan skip_all => 'Need interactive stdin, stderr' unless -t STDIN and -t STDERR;
 #
-my @chars = split //, 'hello, world!';
-my $code  = tb_init();
-ok !$code, 'termbox init';
-ok tb_select_input_mode(TB_INPUT_ESC);
-ok tb_select_output_mode(TB_OUTPUT_NORMAL);
-tb_clear();
-my @rows = (
-    [ TB_WHITE,   TB_BLACK ],
-    [ TB_BLACK,   TB_DEFAULT ],
-    [ TB_RED,     TB_GREEN ],
-    [ TB_GREEN,   TB_RED ],
-    [ TB_YELLOW,  TB_BLUE ],
-    [ TB_MAGENTA, TB_CYAN ]
-);
-
-for my $colors ( 0 .. $#rows ) {
-    my $j = 0;
-    for my $char (@chars) {
-        tb_change_cell( $j, $colors, ord $char, @{ $rows[$colors] } );
-        $j++;
-    }
+my $code = tb_init();
+if ( !$code && Termbox::tb_last_errno() == 6 ) {
+    diag 'errno: ' . Termbox::tb_last_errno();
+    diag 'error: ' . Termbox::tb_strerror( Termbox::tb_last_errno() );
 }
+ok !$code, 'termbox init';
+my $y = 0;
+tb_printf( 0, $y++, TB_GREEN, 0, "hello from termbox" );
+tb_printf( 0, $y++, 0,        0, "width=%d height=%d", tb_width(), tb_height() );
+tb_printf( 0, $y++, 0,        0, "press any key..." );
 tb_present();
-diag 'Hold it for a second...';
-sleep 1;
+diag 'Hold it for a few seconds...';
+sleep 3;
 tb_shutdown();
 pass 'That works!';
 done_testing;

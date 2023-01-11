@@ -10,7 +10,7 @@ package Termbox {
     use FFI::Platypus 2.00;
     use FFI::Platypus::Memory qw( malloc free );
     $ENV{FFI_PLATYPUS_DLERROR} = 1;
-    our $VERSION = "0.12_01";
+    our $VERSION = "2.00_01";
     my $ffi = FFI::Platypus->new(
         api  => 2,
         lang => 'CPP',
@@ -26,17 +26,14 @@ package Termbox {
     #
     $EXPORT_TAGS{api} = [
         qw[
-            tb_init tb_init_file tb_init_fd tb_shutdown
+            tb_init tb_shutdown
             tb_width tb_height
-            tb_clear tb_set_clear_attributes
+            tb_clear
             tb_present
-            tb_set_cursor
-            tb_put_cell tb_change_cell
-            tb_cell_buffer
-            tb_select_input_mode
-            tb_select_output_mode
-            tb_peek_event
-            tb_poll_event
+            tb_set_cursor tb_hide_cursor
+            tb_set_cell
+            tb_peek_event tb_poll_event
+            tb_print tb_printf
         ]
     ];
     use constant {
@@ -298,11 +295,6 @@ package Termbox {
     $EXPORT_TAGS{'all'} = \@EXPORT_OK;    # When you want to import everything
 
     #
-    use Termbox::Cell;
-    $ffi->type('record(Termbox::Cell)');
-    #
-    use Termbox::Event;
-    $ffi->type('record(Termbox::Event)');
     #
     $ffi->attach( tb_init      => ['void']   => 'int' );
     $ffi->attach( tb_init_file => ['string'] => 'int' );
@@ -312,36 +304,23 @@ package Termbox {
     $ffi->attach( tb_width  => ['void'] => 'int' );
     $ffi->attach( tb_height => ['void'] => 'int' );
     #
-    $ffi->attach( tb_clear                => ['void']                   => 'void' );
-    $ffi->attach( tb_set_clear_attributes => [ 'uint16_t', 'uint16_t' ] => 'void' );
+    $ffi->attach( tb_clear => ['void'] => 'void' );
     #
     $ffi->attach( tb_present => ['void'] => 'void' );
     #
     $ffi->attach( tb_set_cursor => [ 'int', 'int' ] => 'void' );
     #
-    $ffi->attach( tb_put_cell => [ 'int', 'int', 'record(Termbox::Cell)*' ] => 'void' );
-    $ffi->attach( [ 'tb_change_cell' => '_tb_change_cell' ],
-        [ 'int', 'int', 'uint32_t', 'uint16_t', 'uint16_t' ] => 'void' );
+    $ffi->attach( tb_printf => [ 'int', 'int', 'int', 'int', 'string' ] => 'int' );
 
     # The C API expects a char which doesn't so much work with Perl's representation of a character.
     sub tb_change_cell {
         _tb_change_cell( $_[0], $_[1], ( length $_[2] == 1 ? ord( $_[2] ) : $_[2] ), $_[3], $_[4] );
     }
     #
-    $ffi->attach( tb_cell_buffer => ['void'] => 'record(Termbox::Cell)*' );
+    # Utils
+    $ffi->attach( tb_last_errno => ['void'] => 'int' );
+    $ffi->attach( tb_strerror   => ['int']  => 'string' );
     #
-    $ffi->attach( tb_select_input_mode => ['int'] => 'int' );
-    #
-    $ffi->attach( tb_select_output_mode => ['int'] => 'int' );
-    #
-    $ffi->attach( tb_peek_event => [ 'record(Termbox::Event)*', 'int' ] => 'int' );
-    #
-    $ffi->attach( tb_poll_event => ['record(Termbox::Event)*'] => 'int' );
-
-    # Utils: Not documented yet... might keep them private
-    $ffi->attach( tb_utf8_char_length     => ['char']                   => 'int' );
-    $ffi->attach( tb_utf8_char_to_unicode => [ 'uint32_t *', 'string' ] => 'int' );
-    $ffi->attach( tb_utf8_unicode_to_char => [qw[string uint32_t]]      => 'int' );
     #
 }
 1;

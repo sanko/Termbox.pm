@@ -17,7 +17,6 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
-          - windows-latest
         perl:
           - 5.36.0
           - 5.34.1
@@ -33,6 +32,8 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
       - name: Install dependencies
-        run: cpanm -nq --installdeps --with-develop --with-recommends .
+        run: cpanm --notest --installdeps --with-develop --with-recommends .
+      - uses: Yuri6037/Action-FakeTTY@1abc69c7d530815855caedcd73842bae5687c1a6
       - name: Run test
-        run: prove -lr t
+        # https://github.com/actions/runner/issues/241
+        run: faketty cpanm -v .
