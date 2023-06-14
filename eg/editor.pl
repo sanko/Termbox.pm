@@ -28,32 +28,28 @@ my %theme = (            # solarized
 tb_set_input_mode( TB_INPUT_ESC | TB_INPUT_ALT | TB_INPUT_MOUSE );
 tb_set_output_mode(TB_OUTPUT_TRUECOLOR);
 tb_set_clear_attrs( $theme{base0}, $theme{base03} );
-my $spos     = 3;    # scroll position
+my $spos     = 3;                                          # scroll position
 my $lineno   = 10;
 my $status   = '';
-my $file_len = 0;
+my @lines    = readfile( $0, $lineno, tb_height() - 2 );
+my $file_len = scalar @lines;
 
 sub readfile {
     my ( $path, $top, $lines ) = @_;
     CORE::state $files;
     $files->{$path} //= path($path);
-    $file_len = $files->{$path}->lines_utf8( { binmode => 1 } );
-    my @lines
-        = $files->{$path}->lines_utf8( { chomp => 1, count => $top + $lines - 1, binmode => 1 } );
-    @lines[ -$lines .. -1 ];
+    $files->{$path}->lines_utf8( { chomp => 1, binmode => 1 } );
 }
 
 sub draw {
     tb_clear();
-    my @lines = readfile( $0, $lineno, tb_height() - 2 );
 
     # title
-    tb_print( 0, 0, $theme{base02}, $theme{base1}, ' ' x tb_width() );
-    tb_print( 0, 0, $theme{base02} | TB_TRUECOLOR_BOLD,
-        $theme{base1}, " 🦪 $0 - [New File] ($lineno of $file_len)" );
+    tb_print( 0, 0, $theme{base02},                     $theme{base1}, ' ' x tb_width() );
+    tb_print( 0, 0, $theme{base02} | TB_TRUECOLOR_BOLD, $theme{base1}, " 🦪 $0 - [New File]" );
     for my $line ( 1 .. tb_height() - 2 ) {
         tb_print( 0, $line, $theme{base0}, $theme{base02}, sprintf ' %3d ', $line + $lineno - 1 );
-        tb_print( 6, $line, $theme{base3}, $theme{base03}, $lines[ $line - 1 ] );
+        tb_print( 6, $line, $theme{base3}, $theme{base03}, $lines[ ( $lineno + $line - 2 ) ] );
 
         # scrollbar
         tb_print( tb_width() - 1, $line, $theme{base0}, $theme{base02},
