@@ -52,8 +52,8 @@ sub draw {
         tb_print( 6, $line, $theme{base3}, $theme{base03}, $lines[ ( $lineno + $line - 2 ) ] );
 
         # scrollbar
-        tb_print( tb_width() - 1, $line, $theme{base0}, $theme{base02},
-            $line == $spos ? '◧' : '┃' );
+        tb_print( tb_width() - 1,
+            $line, $theme{base0}, $theme{base02}, $line == $spos ? '◧' : '┃' );
     }
 
     # status bar
@@ -72,7 +72,9 @@ while ( !tb_poll_event($ev) ) {
     last      if $ev->key == 17                      && $ev->mod eq 2;
     $spos--   if $ev->key == TB_KEY_MOUSE_WHEEL_UP   && $spos > 1;
     $spos++   if $ev->key == TB_KEY_MOUSE_WHEEL_DOWN && $spos < tb_height() - 2;
+    $lineno-- if $ev->key == TB_KEY_MOUSE_WHEEL_UP   && $lineno > 1;
     $lineno-- if $ev->key == TB_KEY_ARROW_UP         && $lineno > 1;
+    $lineno++ if $ev->key == TB_KEY_MOUSE_WHEEL_DOWN && $lineno + tb_height() - 2 <= $file_len;
     $lineno++ if $ev->key == TB_KEY_ARROW_DOWN       && $lineno + tb_height() - 2 <= $file_len;
     draw;
 }
