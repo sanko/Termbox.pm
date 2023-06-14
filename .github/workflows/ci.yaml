@@ -17,23 +17,39 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          #~ - windows-latest
         perl:
           - 5.36.0
-          - 5.34.1
-          - 5.32.1
+          - 5.34.0
+          - 5.32.0
           - 5.30.3
+          - 5.28.0
+          - 5.26.0
+          - 5.24.0
+          - 5.22.0
+          - 5.20.0
     name: ${{ matrix.perl }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: 'recursive'
       - name: Setup perl
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-      - name: Install dependencies
-        run: cpanm --notest --installdeps --with-develop --with-recommends .
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: local
+          key: perl-${{ matrix.perl }}-${{ matrix.os }}
+      #~ - name: Install missing dependencies
+        #~ run: cpm install -L -v --show-build-log-on-failure --no-test --with-all --show-progress --cpanfile cpanfile
       - uses: Yuri6037/Action-FakeTTY@1abc69c7d530815855caedcd73842bae5687c1a6
-      - name: Run test
+      - name: Install dependencies
+        run: cpanm -v -n ExtUtils::PL2Bat Module::Build::Tiny FFI::Platypus
+      - name: Install local dependencies
+        run: cpanm -l ${{ github.workspace }}/local -v -n --installdeps .
+      - name: Run tests
+        env: { PERL5LIB: "${{ github.workspace }}/local/lib/perl5" }
         # https://github.com/actions/runner/issues/241
-        run: faketty cpanm -v .
+        run: faketty cpanm -l ${{ github.workspace }}/local -v --test-only .
