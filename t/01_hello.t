@@ -5,6 +5,9 @@ use lib '../lib', 'lib';
 #
 use Termbox qw[:all];
 #
+
+plan skip_all => "Not a tty" unless -t;
+
 my @chars = split //, 'hello, world!';
 my $code  = tb_init();
 ok !$code, 'termbox init';

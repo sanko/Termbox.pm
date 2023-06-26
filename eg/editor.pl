@@ -4,7 +4,7 @@ use warnings;
 use lib '../lib';
 use Termbox 2 qw[:all];
 use Path::Tiny;
-#
+# TODO: https://metacpan.org/pod/Syntax::Kamelon
 my @chars = split //, 'hello, world!';
 my $code  = tb_init();
 my %theme = (            # solarized
@@ -25,10 +25,9 @@ my %theme = (            # solarized
     cyan    => 0x2aa198,
     green   => 0x859900
 );
-tb_set_input_mode( TB_INPUT_ESC | TB_INPUT_ALT | TB_INPUT_MOUSE );
+tb_set_input_mode( TB_INPUT_ESC | TB_INPUT_MOUSE );
 tb_set_output_mode(TB_OUTPUT_TRUECOLOR);
 tb_set_clear_attrs( $theme{base0}, $theme{base03} );
-my $spos     = 3;                                          # scroll position
 my $lineno   = 10;
 my $status   = '';
 my @lines    = readfile( $0, $lineno, tb_height() - 2 );
@@ -52,8 +51,8 @@ sub draw {
         tb_print( 6, $line, $theme{base3}, $theme{base03}, $lines[ ( $lineno + $line - 2 ) ] );
 
         # scrollbar
-        tb_print( tb_width() - 1,
-            $line, $theme{base0}, $theme{base02}, $line == $spos ? '◧' : '┃' );
+        #~ tb_print( tb_width() - 1,
+        #~ $line, $theme{base0}, $theme{base02}, $line == $spos ? '◧' : '┃' );
     }
 
     # status bar
@@ -66,12 +65,10 @@ sub draw {
 draw;
 my $ev = Termbox::Event->new();
 my $y  = 10;
-while ( !tb_poll_event($ev) ) {
+while ( tb_poll_event($ev) == TB_OK ) {
     $status = sprintf 'event: type=%d mod=%d key=%d ch=%d w=%d h=%d x=%d y=%d', $ev->type,
         $ev->mod, $ev->key, $ev->ch, $ev->w, $ev->h, $ev->x, $ev->y;
     last      if $ev->key == 17                      && $ev->mod eq 2;
-    $spos--   if $ev->key == TB_KEY_MOUSE_WHEEL_UP   && $spos > 1;
-    $spos++   if $ev->key == TB_KEY_MOUSE_WHEEL_DOWN && $spos < tb_height() - 2;
     $lineno-- if $ev->key == TB_KEY_MOUSE_WHEEL_UP   && $lineno > 1;
     $lineno-- if $ev->key == TB_KEY_ARROW_UP         && $lineno > 1;
     $lineno++ if $ev->key == TB_KEY_MOUSE_WHEEL_DOWN && $lineno + tb_height() - 2 <= $file_len;

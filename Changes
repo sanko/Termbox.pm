@@ -2,6 +2,10 @@ Revision history for Perl extension Termbox
 
 {{$NEXT}}
 
+2.01 2023-06-26T17:16:41Z
+
+	- Skip 'hello world' test when we are headless or otherwise cannot access /dev/tty
+
 2.00 2023-06-14T16:40:56Z
 
 	- Based on incompatible fork of termbox (which was abandoned)
